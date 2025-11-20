@@ -1,0 +1,264 @@
+import streamlit as st
+
+st.title("Klimatiltak")
+
+st.divider()
+st.subheader("Fyll inn informasjon om tiltaket")
+
+dif = st.selectbox(
+    "DIF",
+    ("Hæren", "Sjøforsvaret", "Luftforsvaret", "Andre"),
+    index=None,
+    placeholder="Velg DIF",
+    help="""
+        **Hvilken driftsenhet tilhører du?**  
+        Velg fra rullgardinlisten.  
+        Representerer du en annen DIF enn de tre alternativene, velg 'Andre'.
+    """
+)
+
+avdeling = st.text_input(
+    "Avdeling",
+    placeholder="Fyll inn avdeling",
+    help="""
+        **Hvilken avdeling i driftsenheten tilhører du?**  
+        Skriv inn fullt navn på avdelingen.
+    """
+)
+
+enhet = st.text_input(
+    "Enhet",
+    placeholder="Fyll inn enhet",
+    help="""
+        **Hvem har ansvaret for å følge opp tiltaket?**  
+        Skriv inn fullt navn på enheten.
+    """
+)
+
+beskrivelse = st.text_area(
+    "Tiltaksbeskrivelse",
+    placeholder="Fyll inn tiltaksbeskrivelse",
+    help="""
+        **Hva går tiltaket ut på?**  
+        Beskriv tiltaket i en kort tekst (maks 100 ord).
+        Beskrivelsen bør inneholde *hva* tiltaket går ut på,
+        *hvilke* utslipp tiltaket kan redusere,
+        og hvordan tiltaket vil påvirke drift i form av bemannings- og investeringsbehov.
+        Ytterligere datagrunnlag kan utdypes i Kolonne D, "Kommentarer".
+    """
+)
+
+utslippskilder = {
+    "Fossilt drivstofforbruk": {
+        "Forbruk enhet": "liter fossilt drivstoff per år",
+        "Reduksjon enhet": "liter fossilt drivstoff redusert"
+    },
+    "Energiforbruk": {
+        "Forbruk enhet": "kWh per år",
+        "Reduksjon enhet": "kWh redusert"
+    },
+    "Transport med fossile brensler": {
+        "Forbruk enhet": "km fossilbasert transport per år",
+        "Reduksjon enhet": "km fossilbasert transport redusert"
+    },
+    "Andre": {
+        "Forbruk enhet": "ukjent enhet - legg til kommentar",
+        "Reduksjon enhet": "ukjent enhet - legg til kommentar"
+    }
+}
+
+utslippskilde = st.selectbox(
+    "Utslippskilde tiltaket målrettes",
+    list(utslippskilder.keys()),
+    index=None,
+    placeholder="Velg utslippskilde",
+    help="""
+        **Hvor oppstår CO2-utslippet?**  
+        Velg fra rullgardinlisten.  
+        Om tiltaket målrettes drivstofforbrukende aktiviteter, velg 'Fossilt drivstofforbruk'.  
+        Om tiltaket målrettes transportrettede aktiviteter, velg 'Personelltransport'.  
+        Om tiltaket målrettes energiforbrukende aktiviteter, velg 'Energiforbruk'.  
+        Om tiltaket målrettes andre utslippskilder enn disse tre, velg 'Andre' (merk: tiltakseffekter vil ikke beregnes for disse tiltakene).
+    """
+)
+
+materiell = st.selectbox(
+    "Materiell tiltaket målrettes",
+    ("Fartøy", "Luftfartøy", "Lette kjøretøy", "Tunge kjøretøy", "Personelltransport (buss)", "Annet"),
+    index=None,
+    placeholder="Velg materiell",
+    help="""
+        **Hvilke type materiell omhandler tiltaket?**  
+        Velg fra rullgardinlisten.  
+        Om tiltaket målrettes ulike plattformer og/eller kjøretøy, velg en av dem (verktøyet er beregnet for å lage ett tiltak per materiell-type).  
+        Om tiltaket målrettes transportrettede aktiviteter, velg 'Personelltransport'.  
+        Om tiltaket målrettes andre utslippspunkter enn materiell, velg 'Andre' (merk: tiltakseffekter vil ikke beregnes for disse tiltakene).
+    """
+)
+
+st.divider()
+st.subheader("Fyll inn estimater for tiltaket")
+
+comment_help = "Beskriv datakilde eller utregningsmetode for estimatet om dette er tilgjengelig."
+
+col1, col2 = st.columns(2, vertical_alignment="bottom")
+antall_materiell = col1.number_input(
+    "Antall materiell tiltaket målrettes",
+    min_value=0,
+    help="""
+        **Hvor mange enheter materiell påvirkes?**  
+        Fyll inn antall materiell som vil påvirkes direkte av tiltaket.
+        Dette kan for eksempel innebære antall lette eller tunge kjøretøy som elektrifiseres,
+        antallet fartøy som reduserer energiforbruket,
+        eller antall luftfartøy som målrettes innblanding av biodrivstoff. 
+
+    """
+)
+col2.button(
+    "*antall*",
+    type="tertiary",
+    disabled=True,
+    key="antall_enhet"
+)
+antall_materiell_kommentar = st.text_area(
+    "Kommentar",
+    placeholder="Fyll inn kommentar til antall materiell",
+    help=comment_help
+)
+
+col1, col2 = st.columns(2, vertical_alignment="bottom")
+forbruk = col1.number_input(
+    "Materiellets nåværende forbruk",
+    min_value=0,
+    help="""
+        **Hva forbruker dette materiellet i dag, per år i angitt enhet?**  
+        Fyll inn absolutt mengde som forbrukes av det angitte materielelt basert på egne estimater eller regnskapsført tall for 2024.
+        Dersom materiellets forbruk er ukjent eller ikke beregnet, før inn sjablongmessige tall basert på sammenliknbart materiell eller sivilt materiell. 
+    """
+    )
+col2.button(
+    f"*{utslippskilder[utslippskilde]['Forbruk enhet']}*" if utslippskilde else "*Velg utslippskilde for å definere enhet*",
+    type="tertiary",
+    disabled=True,
+    key="forbruk_enhet"
+)
+forbruk_kommentar = st.text_area(
+    "Kommentar",
+    placeholder="Fyll inn kommentar til nåværende forbruk",
+    help=comment_help
+)
+
+col1, col2 = st.columns(2, vertical_alignment="bottom")
+reduksjon_absolutt = col1.number_input(
+    "Årlig reduksjon etter tiltaket (absolutt)",
+    min_value=0,
+    help="""
+        **Hvor mye kan tiltaket redusere i absolutte mengde, per materiell og per år?**  
+        Fyll inn absolutt mengde som endres basert på egne estimater eller regnskapsført tall for 2024.
+    """
+)
+col2.button(
+    f"*{utslippskilder[utslippskilde]['Reduksjon enhet']}*" if utslippskilde else "*Velg utslippskilde for å definere enhet*",
+    type="tertiary",
+    disabled=True,
+    key="reduksjon_absolutt_enhet"
+)
+col1, col2 = st.columns(2, vertical_alignment="bottom")
+reduksjon_prosent = col1.number_input(
+    "Årlig reduksjon etter tiltaket (prosent)",
+    min_value=0,
+    max_value=100,
+    help="""
+        **Hvor stor andel av dagens mengde kan reduseres, per materiell og per år?**  
+        Fyll inn andelen av forbruket som forventes redusert ved tiltaket. Fylles bare inn dersom absolutt mengde er ukjent.
+    """,
+    disabled=reduksjon_absolutt > 0
+)
+col2.button(
+    "*prosentvis reduksjon*",
+    type="tertiary",
+    disabled=True,
+    key="reduksjon_prosent_enhet"
+)
+reduksjon_kommentar = st.text_area(
+    "Kommentar",
+    placeholder="Fyll inn kommentar til årlig reduksjon",
+    help=comment_help
+)
+
+col1, col2 = st.columns(2, vertical_alignment="bottom")
+engangsinvestering = col1.number_input(
+    "Forventet engangsinvestering",
+    min_value=0,
+    help="""
+        **Hva vil tiltaket kreve av nye midler over investeringsbudsjettet?**  
+        Fyll inn estimat for engangsinvestering (typisk første året) basert på deres beregning eller en sammenlikning med tilsvarende investeringer
+    """
+)
+col2.button(
+    "*NOK, år 0*",
+    type="tertiary",
+    disabled=True,
+    key="engangsinvestering_enhet"
+)
+engangsinvestering_kommentar = st.text_area(
+    "Kommentar",
+    placeholder="Fyll inn kommentar til engangsinvestering",
+    help=comment_help
+)
+
+col1, col2 = st.columns(2, vertical_alignment="bottom")
+driftskonsekvens = col1.number_input(
+    "Forventet driftskonsekvens (DK)",
+    step=1,
+    help="""
+        **Hva vil tiltaket medføre i økte eller reduserte driftsutgifter?**  
+        Fyll inn forventede årlige utgifter eller besparelser i drift ved gjennomføring av tiltaket, basert på egne beregninger eller tidligere driftregnskap.
+        Økninger i driftsutgifter angis med positivt fortegn (+), mens besparelser angis med negativt fortegn (-).
+    """
+)
+col2.button(
+    "*NOK, årlig*",
+    type="tertiary",
+    disabled=True,
+    key="driftskonsekvens_enhet"
+)
+driftskonsekvens_kommentar = st.text_area(
+    "Kommentar",
+    placeholder="Fyll inn kommentar til driftskonsekvens",
+    help=comment_help
+)
+
+col1, col2 = st.columns(2, vertical_alignment="bottom")
+levetid = col1.number_input(
+    "Tiltakets levetid",
+    min_value=1,
+    max_value=12,
+    help="""
+        **Hvor lenge er tiltaket anslått å vare, i antall år? **  
+        Fyll inn antall år mellom 1 og 12.
+        For tiltak som forventes å vare lenger enn 12 år, fyll inn 12 og kommenter estimert levetid i Kolonne D (tallet vil ikke påvirke resultatet utover beregning av investeringsbeløpets nåverdi)
+    """
+)
+col2.button(
+    "*antall år*",
+    type="tertiary",
+    disabled=True,
+    key="levetid_enhet"
+)
+levetid_kommentar = st.text_area(
+    "Kommentar",
+    placeholder="Fyll inn kommentar til levetid",
+    help=comment_help
+)
+
+st.divider()
+st.subheader("Beregnet tiltakseffekt")
+st.markdown("*Resultat av beregninger vises her*")
+
+st.divider()
+st.button(
+    "Registrer tiltaket",
+    type="primary",
+    help="Klikk for å registrere tiltaket i databasen"
+)
