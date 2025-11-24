@@ -1,9 +1,9 @@
 import streamlit as st
-from oauth2client.service_account import ServiceAccountCredentials
+from google.oauth2.service_account import Credentials
 import gspread
 
 scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
-credentials = ServiceAccountCredentials.from_json_keyfile_dict(st.secrets["google_service_account"], scope)
+credentials = Credentials.from_service_account_info(st.secrets["google_service_account"], scopes=scope)
 client = gspread.authorize(credentials)
 
 def registrer_tiltak(data):
