@@ -1,4 +1,10 @@
 import streamlit as st
+from registrer_tiltak import registrer_tiltak
+
+st.set_page_config(
+    page_title="Klimatiltak",
+    page_icon=":material/globe:"
+)
 
 st.title("Klimatiltak")
 
@@ -235,7 +241,7 @@ levetid = col1.number_input(
     min_value=1,
     max_value=12,
     help="""
-        **Hvor lenge er tiltaket anslått å vare, i antall år? **  
+        **Hvor lenge er tiltaket anslått å vare, i antall år?**  
         Fyll inn antall år mellom 1 og 12.
         For tiltak som forventes å vare lenger enn 12 år, fyll inn 12 og kommenter estimert levetid i Kolonne D (tallet vil ikke påvirke resultatet utover beregning av investeringsbeløpets nåverdi)
     """
@@ -254,11 +260,39 @@ levetid_kommentar = st.text_area(
 
 st.divider()
 st.subheader("Beregnet tiltakseffekt")
+st.markdown(":orange-badge[⚠️ Demo: Funksjonalitet ikke implementert]")
 st.markdown("*Resultat av beregninger vises her*")
 
+data = [
+    dif,
+    avdeling,
+    enhet,
+    beskrivelse,
+    utslippskilde,
+    materiell,
+    antall_materiell,
+    antall_materiell_kommentar,
+    forbruk,
+    forbruk_kommentar,
+    reduksjon_absolutt,
+    reduksjon_prosent,
+    reduksjon_kommentar,
+    engangsinvestering,
+    engangsinvestering_kommentar,
+    driftskonsekvens,
+    driftskonsekvens_kommentar,
+    levetid,
+    levetid_kommentar
+]
+
 st.divider()
+st.subheader("Send inn utfylt skjema")
+
 st.button(
     "Registrer tiltaket",
     type="primary",
-    help="Klikk for å registrere tiltaket i databasen"
+    help="Klikk for å registrere tiltaket i databasen",
+    on_click=registrer_tiltak,
+    args=(data,)
 )
+st.caption("Alle registrerte tiltak lagres her: https://docs.google.com/spreadsheets/d/1FLDZ9ZibMww44XnBYChb-ecOTvD189TR-vZ6QpGREnM/edit?usp=sharing")
