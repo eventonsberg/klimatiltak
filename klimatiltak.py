@@ -1,4 +1,11 @@
 import streamlit as st
+from bakgrunnsdata import utslippskilder, materielltyper
+from beregninger import (
+    beregn_aarlig_tiltaksmengde,
+    beregn_total_tiltaksmengde,
+    beregn_aarlig_utslippsreduksjon,
+    beregn_total_utslippsreduksjon
+)
 from registrer_tiltak import registrer_tiltak
 
 st.set_page_config(
@@ -54,25 +61,6 @@ beskrivelse = st.text_area(
     """
 )
 
-utslippskilder = {
-    "Fossilt drivstofforbruk": {
-        "Forbruk enhet": "liter fossilt drivstoff per år",
-        "Reduksjon enhet": "liter fossilt drivstoff redusert"
-    },
-    "Energiforbruk": {
-        "Forbruk enhet": "kWh per år",
-        "Reduksjon enhet": "kWh redusert"
-    },
-    "Transport med fossile brensler": {
-        "Forbruk enhet": "km fossilbasert transport per år",
-        "Reduksjon enhet": "km fossilbasert transport redusert"
-    },
-    "Andre": {
-        "Forbruk enhet": "ukjent enhet - legg til kommentar",
-        "Reduksjon enhet": "ukjent enhet - legg til kommentar"
-    }
-}
-
 utslippskilde = st.selectbox(
     "Utslippskilde tiltaket målrettes",
     list(utslippskilder.keys()),
@@ -90,7 +78,7 @@ utslippskilde = st.selectbox(
 
 materiell = st.selectbox(
     "Materiell tiltaket målrettes",
-    ("Fartøy", "Luftfartøy", "Lette kjøretøy", "Tunge kjøretøy", "Personelltransport (buss)", "Annet"),
+    materielltyper,
     index=None,
     placeholder="Velg materiell",
     help="""
@@ -143,7 +131,7 @@ forbruk = col1.number_input(
     """
     )
 col2.button(
-    f"*{utslippskilder[utslippskilde]['Forbruk enhet']}*" if utslippskilde else "*Velg utslippskilde for å definere enhet*",
+    f"*{utslippskilder[utslippskilde]['Forbruk enhet']}*" if utslippskilde else "*(Velg utslippskilde for å definere enhet)*",
     type="tertiary",
     disabled=True,
     key="forbruk_enhet"
@@ -164,7 +152,7 @@ reduksjon_absolutt = col1.number_input(
     """
 )
 col2.button(
-    f"*{utslippskilder[utslippskilde]['Reduksjon enhet']}*" if utslippskilde else "*Velg utslippskilde for å definere enhet*",
+    f"*{utslippskilder[utslippskilde]['Reduksjon enhet']}*" if utslippskilde else "*(Velg utslippskilde for å definere enhet)*",
     type="tertiary",
     disabled=True,
     key="reduksjon_absolutt_enhet"
@@ -260,8 +248,17 @@ levetid_kommentar = st.text_area(
 
 st.divider()
 st.subheader("Beregnet tiltakseffekt")
-st.markdown(":orange-badge[⚠️ Demo: Funksjonalitet ikke implementert]")
-st.markdown("*Resultat av beregninger vises her*")
+
+tiltaksmengde_enhet = utslippskilder[utslippskilde]['Reduksjon enhet'] if utslippskilde else "(Velg utslippskilde for å definere enhet)"
+aarlig_tiltaksmengde = beregn_aarlig_tiltaksmengde(antall_materiell, forbruk, reduksjon_absolutt, reduksjon_prosent)
+st.markdown(f"Årlig tiltaksmengde: **:blue[{aarlig_tiltaksmengde}]** *:gray[{tiltaksmengde_enhet}]*")
+total_tiltaksmengde = beregn_total_tiltaksmengde(aarlig_tiltaksmengde, levetid)
+st.markdown(f"Total tiltaksmengde: **:blue[{total_tiltaksmengde}]** *:gray[{tiltaksmengde_enhet}]*")
+
+aarlig_utslippsreduksjon = beregn_aarlig_utslippsreduksjon(aarlig_tiltaksmengde, utslippskilde, materiell)
+st.markdown(f"Unngåtte utslipp, årlig: **:blue[{aarlig_utslippsreduksjon}]** *:gray[tonn CO2-ekv. per år]*")
+total_utslippsreduksjon = beregn_total_utslippsreduksjon(aarlig_utslippsreduksjon, levetid)
+st.markdown(f"Unngåtte utslipp, totalt: **:blue[{total_utslippsreduksjon}]** *:gray[tonn CO2-ekv.]*")
 
 data = [
     dif,
