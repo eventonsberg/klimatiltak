@@ -5,7 +5,9 @@ from beregninger import (
     beregn_total_tiltaksmengde,
     beregn_aarlig_utslippsreduksjon,
     beregn_total_utslippsreduksjon,
-    beregn_karbonprisjustert_merkostnad_foerste_aar
+    beregn_karbonprisjustert_merkostnad,
+    beregn_naaverdi,
+    beregn_tiltakskostnad
 )
 from formatering import formater_nummer
 from registrer_tiltak import registrer_tiltak
@@ -260,8 +262,15 @@ with st.sidebar:
     st.markdown(f"Unngåtte utslipp, årlig:  \n**:blue[{formater_nummer(aarlig_utslippsreduksjon/1000, 1)}]** *:gray[tonn CO2-ekv. per år]*")
     total_utslippsreduksjon = beregn_total_utslippsreduksjon(aarlig_utslippsreduksjon, levetid)
     st.markdown(f"Unngåtte utslipp, totalt:  \n**:blue[{formater_nummer(total_utslippsreduksjon/1000, 1)}]** *:gray[tonn CO2-ekv.]*")
-    karbonprisjustert_merkostnad_foerste_aar = beregn_karbonprisjustert_merkostnad_foerste_aar(aarlig_utslippsreduksjon, 2026, merkostnad)
+    karbonprisjustert_merkostnad_foerste_aar = beregn_karbonprisjustert_merkostnad(aarlig_utslippsreduksjon, 2026, merkostnad)
     st.markdown(f"Karbonprisjustert MK, første år:  \n**:blue[{formater_nummer(karbonprisjustert_merkostnad_foerste_aar)}]** *:gray[NOK, år 1]*")
+    if levetid > 1:
+        karbonprisjustert_merkostnad_siste_aar = beregn_karbonprisjustert_merkostnad(aarlig_utslippsreduksjon, 2025 + levetid, merkostnad)
+        st.markdown(f"Karbonprisjustert MK, siste år:  \n**:blue[{formater_nummer(karbonprisjustert_merkostnad_siste_aar)}]** *:gray[NOK, år {levetid}]*")
+    naaverdi = beregn_naaverdi(aarlig_utslippsreduksjon, merkostnad, levetid, engangsinvestering)
+    st.markdown(f"Nåverdi av tiltaket:  \n**:blue[{formater_nummer(naaverdi)}]** *:gray[NOK, år 0]*")
+    tiltakskostnad = beregn_tiltakskostnad(total_utslippsreduksjon/1000, naaverdi)
+    st.markdown(f"Tiltakskostnad:  \n**:blue[{formater_nummer(tiltakskostnad)}]** *:gray[NOK per tonn CO2-ekv.]*")
 
 data = [
     dif,
