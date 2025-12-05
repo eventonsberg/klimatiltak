@@ -39,12 +39,12 @@ utslippskilder = {
 materielltyper = ("Fartøy", "Luftfartøy", "Lette kjøretøy", "Tunge kjøretøy", "Personelltransport (buss)", "Annet")
 
 CO2_avgiftsnivå = {
-    2024: 1.18, # NOK per kg CO2-ekv
-    2025: 1.41,
-    2026: 1.60,
-    2027: 1.80,
-    2028: 2.00,
-    2029: 2.20,
+    2024: 1.176, # NOK per kg CO2-ekv
+    2025: 1.405,
+    2026: 1.604,
+    2027: 1.803,
+    2028: 2.002,
+    2029: 2.201,
     2030: 2.40,
     2031: 2.40,
     2032: 2.40,

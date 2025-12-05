@@ -4,7 +4,8 @@ from beregninger import (
     beregn_aarlig_tiltaksmengde,
     beregn_total_tiltaksmengde,
     beregn_aarlig_utslippsreduksjon,
-    beregn_total_utslippsreduksjon
+    beregn_total_utslippsreduksjon,
+    beregn_karbonprisjustert_merkostnad_foerste_aar
 )
 from registrer_tiltak import registrer_tiltak
 
@@ -202,12 +203,12 @@ engangsinvestering_kommentar = st.text_area(
 )
 
 col1, col2 = st.columns(2, vertical_alignment="bottom")
-driftskonsekvens = col1.number_input(
-    "Forventet driftskonsekvens (DK)",
+merkostnad = col1.number_input(
+    "Forventet merkostnad (MK)",
     step=1,
     help="""
-        **Hva vil tiltaket medføre i økte eller reduserte driftsutgifter?**  
-        Fyll inn forventede årlige utgifter eller besparelser i drift ved gjennomføring av tiltaket, basert på egne beregninger eller tidligere driftregnskap.
+        **Hva vil tiltaket medføre i netto driftskostnader?**  
+        Fyll inn summen av forventede årlige utgifter eller besparelser i drift ved gjennomføring av tiltaket, basert på egne beregninger eller tidligere driftregnskap.
         Økninger i driftsutgifter angis med positivt fortegn (+), mens besparelser angis med negativt fortegn (-).
     """
 )
@@ -215,11 +216,11 @@ col2.button(
     "*NOK, årlig*",
     type="tertiary",
     disabled=True,
-    key="driftskonsekvens_enhet"
+    key="merkostnad_enhet"
 )
-driftskonsekvens_kommentar = st.text_area(
+merkostnad_kommentar = st.text_area(
     "Kommentar",
-    placeholder="Fyll inn kommentar til driftskonsekvens",
+    placeholder="Fyll inn kommentar til merkostnad",
     help=comment_help
 )
 
@@ -246,19 +247,21 @@ levetid_kommentar = st.text_area(
     help=comment_help
 )
 
-st.divider()
-st.subheader("Beregnet tiltakseffekt")
+with st.sidebar:
+    st.header("Beregnet tiltakseffekt")
 
-tiltaksmengde_enhet = utslippskilder[utslippskilde]['Reduksjon enhet'] if utslippskilde else "(Velg utslippskilde for å definere enhet)"
-aarlig_tiltaksmengde = beregn_aarlig_tiltaksmengde(antall_materiell, forbruk, reduksjon_absolutt, reduksjon_prosent)
-st.markdown(f"Årlig tiltaksmengde: **:blue[{aarlig_tiltaksmengde}]** *:gray[{tiltaksmengde_enhet}]*")
-total_tiltaksmengde = beregn_total_tiltaksmengde(aarlig_tiltaksmengde, levetid)
-st.markdown(f"Total tiltaksmengde: **:blue[{total_tiltaksmengde}]** *:gray[{tiltaksmengde_enhet}]*")
+    tiltaksmengde_enhet = utslippskilder[utslippskilde]['Reduksjon enhet'] if utslippskilde else "(Velg utslippskilde for å definere enhet)"
+    aarlig_tiltaksmengde = beregn_aarlig_tiltaksmengde(antall_materiell, forbruk, reduksjon_absolutt, reduksjon_prosent)
+    st.markdown(f"Årlig tiltaksmengde:  \n**:blue[{aarlig_tiltaksmengde:,.0f}".replace("," , " ") + f"]** *:gray[{tiltaksmengde_enhet}]*")
+    total_tiltaksmengde = beregn_total_tiltaksmengde(aarlig_tiltaksmengde, levetid)
+    st.markdown(f"Total tiltaksmengde:  \n**:blue[{total_tiltaksmengde:,.0f}".replace("," , " ") + f"]** *:gray[{tiltaksmengde_enhet}]*")
+    aarlig_utslippsreduksjon = beregn_aarlig_utslippsreduksjon(aarlig_tiltaksmengde, utslippskilde, materiell)
+    st.markdown(f"Unngåtte utslipp, årlig:  \n**:blue[{aarlig_utslippsreduksjon/1000}]** *:gray[tonn CO2-ekv. per år]*")
+    total_utslippsreduksjon = beregn_total_utslippsreduksjon(aarlig_utslippsreduksjon, levetid)
+    st.markdown(f"Unngåtte utslipp, totalt:  \n**:blue[{total_utslippsreduksjon/1000}]** *:gray[tonn CO2-ekv.]*")
 
-aarlig_utslippsreduksjon = beregn_aarlig_utslippsreduksjon(aarlig_tiltaksmengde, utslippskilde, materiell)
-st.markdown(f"Unngåtte utslipp, årlig: **:blue[{aarlig_utslippsreduksjon}]** *:gray[tonn CO2-ekv. per år]*")
-total_utslippsreduksjon = beregn_total_utslippsreduksjon(aarlig_utslippsreduksjon, levetid)
-st.markdown(f"Unngåtte utslipp, totalt: **:blue[{total_utslippsreduksjon}]** *:gray[tonn CO2-ekv.]*")
+    karbonprisjustert_merkostnad_foerste_aar = beregn_karbonprisjustert_merkostnad_foerste_aar(aarlig_utslippsreduksjon, merkostnad)
+    st.markdown("Karbonprisjustert MK, første år:  \n" + f"**:blue[{karbonprisjustert_merkostnad_foerste_aar:,.0f}".replace("," , " ") + "]** *:gray[NOK, år 1]*")
 
 data = [
     dif,
@@ -276,8 +279,8 @@ data = [
     reduksjon_kommentar,
     engangsinvestering,
     engangsinvestering_kommentar,
-    driftskonsekvens,
-    driftskonsekvens_kommentar,
+    merkostnad,
+    merkostnad_kommentar,
     levetid,
     levetid_kommentar
 ]
