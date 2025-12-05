@@ -254,23 +254,73 @@ with st.sidebar:
     st.header("Beregnet tiltakseffekt")
 
     tiltaksmengde_enhet = utslippskilder[utslippskilde]['Reduksjon enhet'] if utslippskilde else "(Velg utslippskilde for å definere enhet)"
+    
     aarlig_tiltaksmengde = beregn_aarlig_tiltaksmengde(antall_materiell, forbruk, reduksjon_absolutt, reduksjon_prosent)
-    st.markdown(f"Årlig tiltaksmengde:  \n**:blue[{formater_nummer(aarlig_tiltaksmengde)}]** *:gray[{tiltaksmengde_enhet}]*")
+    st.markdown(
+        f"Årlig tiltaksmengde:  \n**:blue[{formater_nummer(aarlig_tiltaksmengde)}]** *:gray[{tiltaksmengde_enhet}]*",
+        help="""**Mengden tiltaket vil påvirke årlig**  
+            :blue-badge[Antall materiell tiltaket målrettes] x :blue-badge[Årlig reduksjon etter tiltaket (absolutt)]  
+            *eller*  
+            :blue-badge[Antall materiell tiltaket målrettes] x :blue-badge[Materiellets nåværende forbruk] x :blue-badge[Årlig reduksjon etter tiltaket (prosent)]
+        """
+    )
+
     total_tiltaksmengde = beregn_total_tiltaksmengde(aarlig_tiltaksmengde, levetid)
-    st.markdown(f"Total tiltaksmengde:  \n**:blue[{formater_nummer(total_tiltaksmengde)}]** *:gray[{tiltaksmengde_enhet}]*")
+    st.markdown(
+        f"Total tiltaksmengde:  \n**:blue[{formater_nummer(total_tiltaksmengde)}]** *:gray[{tiltaksmengde_enhet}]*",
+        help="""**Mengden tiltaket vil påvirke totalt, gjennom levetiden**  
+            :blue-badge[Årlig tiltaksmengde] x :blue-badge[Tiltakets levetid]
+        """
+    )
+
     aarlig_utslippsreduksjon = beregn_aarlig_utslippsreduksjon(aarlig_tiltaksmengde, utslippskilde, materiell)
-    st.markdown(f"Unngåtte utslipp, årlig:  \n**:blue[{formater_nummer(aarlig_utslippsreduksjon/1000, 1)}]** *:gray[tonn CO2-ekv. per år]*")
+    st.markdown(
+        f"Unngåtte utslipp, årlig:  \n**:blue[{formater_nummer(aarlig_utslippsreduksjon/1000, 1)}]** *:gray[tonn CO2-ekv. per år]*",
+        help="""**Hvor mange tonn CO2-utslipp vil tiltaket kunne redusere årlig?**  
+            :blue-badge[Årlig tiltaksmengde] x :blue-badge[Utslippsfaktor for valgt utslippskilde og materiell]
+        """
+    )
+
     total_utslippsreduksjon = beregn_total_utslippsreduksjon(aarlig_utslippsreduksjon, levetid)
-    st.markdown(f"Unngåtte utslipp, totalt:  \n**:blue[{formater_nummer(total_utslippsreduksjon/1000, 1)}]** *:gray[tonn CO2-ekv.]*")
+    st.markdown(
+        f"Unngåtte utslipp, totalt:  \n**:blue[{formater_nummer(total_utslippsreduksjon/1000, 1)}]** *:gray[tonn CO2-ekv.]*",
+        help="""**Hvor mange tonn CO2-utslipp vil tiltaket redusere totalt?**  
+            :blue-badge[Unngåtte utslipp, årlig] x :blue-badge[Tiltakets levetid]
+        """
+    )
+
     karbonprisjustert_merkostnad_foerste_aar = beregn_karbonprisjustert_merkostnad(aarlig_utslippsreduksjon, 2026, merkostnad)
-    st.markdown(f"Karbonprisjustert MK, første år:  \n**:blue[{formater_nummer(karbonprisjustert_merkostnad_foerste_aar)}]** *:gray[NOK, år 1]*")
+    st.markdown(
+        f"Karbonprisjustert MK, første år:  \n**:blue[{formater_nummer(karbonprisjustert_merkostnad_foerste_aar)}]** *:gray[NOK, år 1]*",
+        help="""**Hva blir årlig driftskonsekvens justert for CO2-avgiftssatser i år 1?**  
+            :blue-badge[Forventet merkostnad (MK)] - (:blue-badge[Unngåtte utslipp, årlig] x :blue-badge[Neste års CO2-avgift])
+        """
+    )
+
     if levetid > 1:
         karbonprisjustert_merkostnad_siste_aar = beregn_karbonprisjustert_merkostnad(aarlig_utslippsreduksjon, 2025 + levetid, merkostnad)
-        st.markdown(f"Karbonprisjustert MK, siste år:  \n**:blue[{formater_nummer(karbonprisjustert_merkostnad_siste_aar)}]** *:gray[NOK, år {levetid}]*")
+        st.markdown(
+            f"Karbonprisjustert MK, siste år:  \n**:blue[{formater_nummer(karbonprisjustert_merkostnad_siste_aar)}]** *:gray[NOK, år {levetid}]*",
+            help="""**Hva blir årlig driftskonsekvens justert for CO2-avgiftssatser i siste år av tiltakets levetid?**  
+                :blue-badge[Forventet merkostnad (MK)] - (:blue-badge[Unngåtte utslipp, årlig] x :blue-badge[CO2-avgift i siste år av tiltakets levetid])
+            """
+        )
+
     naaverdi = beregn_naaverdi(aarlig_utslippsreduksjon, merkostnad, levetid, engangsinvestering)
-    st.markdown(f"Nåverdi av tiltaket:  \n**:blue[{formater_nummer(naaverdi)}]** *:gray[NOK, år 0]*")
+    st.markdown(
+        f"Tiltakets nåverdi:  \n**:blue[{formater_nummer(naaverdi)}]** *:gray[NOK, år 0]*",
+        help="""**Hva er tiltakets netto nåverdi, gitt fremtidige karbonpriser og driftskonsekvenser?**  
+            :blue-badge[Forventet engangsinvestering] + Summen av :blue-badge[Karbonprisjustert MK, år *n*] / :blue-badge[1.04^*n*] for hvert år *n* i tiltakets levetid
+        """
+    )
+
     tiltakskostnad = beregn_tiltakskostnad(total_utslippsreduksjon/1000, naaverdi)
-    st.markdown(f"Tiltakskostnad:  \n**:blue[{formater_nummer(tiltakskostnad)}]** *:gray[NOK per tonn CO2-ekv.]*")
+    st.markdown(
+        f"Tiltakskostnad:  \n**:blue[{formater_nummer(tiltakskostnad)}]** *:gray[NOK per tonn CO2-ekv.]*",
+        help="""**Hva er tiltakets kostnadseffektivitet gitt antall unngåtte utslipp per krone?**  
+            :blue-badge[Tiltakets nåverdi] / :blue-badge[Unngåtte utslipp, totalt]
+        """
+    )
 
 data = [
     dif,
