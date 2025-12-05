@@ -29,9 +29,8 @@ def beregn_total_utslippsreduksjon(aarlig_utslippsreduksjon, levetid):
         total_utslippsreduksjon = aarlig_utslippsreduksjon * levetid
     return total_utslippsreduksjon
 
-def beregn_karbonprisjustert_merkostnad_foerste_aar(aarlig_utslippsreduksjon, merkostnad):
+def beregn_karbonprisjustert_merkostnad_foerste_aar(aarlig_utslippsreduksjon, aar, merkostnad):
     karbonprisjustert_merkostnad_foerste_aar = 0
-    aar = 2026
     if aar in CO2_avgiftsnivå:
         CO2_avgift = aarlig_utslippsreduksjon * CO2_avgiftsnivå[aar]
         karbonprisjustert_merkostnad_foerste_aar = merkostnad - CO2_avgift

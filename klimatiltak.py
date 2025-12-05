@@ -7,6 +7,7 @@ from beregninger import (
     beregn_total_utslippsreduksjon,
     beregn_karbonprisjustert_merkostnad_foerste_aar
 )
+from formatering import formater_nummer
 from registrer_tiltak import registrer_tiltak
 
 st.set_page_config(
@@ -252,16 +253,15 @@ with st.sidebar:
 
     tiltaksmengde_enhet = utslippskilder[utslippskilde]['Reduksjon enhet'] if utslippskilde else "(Velg utslippskilde for å definere enhet)"
     aarlig_tiltaksmengde = beregn_aarlig_tiltaksmengde(antall_materiell, forbruk, reduksjon_absolutt, reduksjon_prosent)
-    st.markdown(f"Årlig tiltaksmengde:  \n**:blue[{aarlig_tiltaksmengde:,.0f}".replace("," , " ") + f"]** *:gray[{tiltaksmengde_enhet}]*")
+    st.markdown(f"Årlig tiltaksmengde:  \n**:blue[{formater_nummer(aarlig_tiltaksmengde)}]** *:gray[{tiltaksmengde_enhet}]*")
     total_tiltaksmengde = beregn_total_tiltaksmengde(aarlig_tiltaksmengde, levetid)
-    st.markdown(f"Total tiltaksmengde:  \n**:blue[{total_tiltaksmengde:,.0f}".replace("," , " ") + f"]** *:gray[{tiltaksmengde_enhet}]*")
+    st.markdown(f"Total tiltaksmengde:  \n**:blue[{formater_nummer(total_tiltaksmengde)}]** *:gray[{tiltaksmengde_enhet}]*")
     aarlig_utslippsreduksjon = beregn_aarlig_utslippsreduksjon(aarlig_tiltaksmengde, utslippskilde, materiell)
-    st.markdown(f"Unngåtte utslipp, årlig:  \n**:blue[{aarlig_utslippsreduksjon/1000}]** *:gray[tonn CO2-ekv. per år]*")
+    st.markdown(f"Unngåtte utslipp, årlig:  \n**:blue[{formater_nummer(aarlig_utslippsreduksjon/1000, 1)}]** *:gray[tonn CO2-ekv. per år]*")
     total_utslippsreduksjon = beregn_total_utslippsreduksjon(aarlig_utslippsreduksjon, levetid)
-    st.markdown(f"Unngåtte utslipp, totalt:  \n**:blue[{total_utslippsreduksjon/1000}]** *:gray[tonn CO2-ekv.]*")
-
-    karbonprisjustert_merkostnad_foerste_aar = beregn_karbonprisjustert_merkostnad_foerste_aar(aarlig_utslippsreduksjon, merkostnad)
-    st.markdown("Karbonprisjustert MK, første år:  \n" + f"**:blue[{karbonprisjustert_merkostnad_foerste_aar:,.0f}".replace("," , " ") + "]** *:gray[NOK, år 1]*")
+    st.markdown(f"Unngåtte utslipp, totalt:  \n**:blue[{formater_nummer(total_utslippsreduksjon/1000, 1)}]** *:gray[tonn CO2-ekv.]*")
+    karbonprisjustert_merkostnad_foerste_aar = beregn_karbonprisjustert_merkostnad_foerste_aar(aarlig_utslippsreduksjon, 2026, merkostnad)
+    st.markdown(f"Karbonprisjustert MK, første år:  \n**:blue[{formater_nummer(karbonprisjustert_merkostnad_foerste_aar)}]** *:gray[NOK, år 1]*")
 
 data = [
     dif,
