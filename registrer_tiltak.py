@@ -7,6 +7,7 @@ credentials = Credentials.from_service_account_info(st.secrets["google_service_a
 client = gspread.authorize(credentials)
 
 def registrer_tiltak(data):
+    tiltak_id = 1
     sheet = client.open("Klimatiltak").sheet1
     sheet.append_row(data)
-    st.toast("Tiltaket er registrert!", icon="✅", duration="long")
+    st.session_state['tiltak_id'] = tiltak_id

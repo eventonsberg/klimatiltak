@@ -19,6 +19,14 @@ st.set_page_config(
 
 st.title("Klimatiltak")
 
+if 'tiltak_id' in st.session_state:
+    st.success(f"Tiltaket er registrert! *Tiltakets ID-nummer: {st.session_state['tiltak_id']}*", icon="✅")
+    st.button(
+        "Registrer nytt tiltak",
+        on_click=lambda: st.session_state.pop('tiltak_id', None)
+    )
+    st.stop()
+
 st.divider()
 st.subheader("Fyll inn informasjon om tiltaket")
 
@@ -354,4 +362,7 @@ st.button(
     on_click=registrer_tiltak,
     args=(data,)
 )
+
+
+
 st.caption("Alle registrerte tiltak lagres her: https://docs.google.com/spreadsheets/d/1FLDZ9ZibMww44XnBYChb-ecOTvD189TR-vZ6QpGREnM/edit?usp=sharing")
