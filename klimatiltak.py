@@ -305,8 +305,8 @@ with st.sidebar:
         """
     )
 
+    karbonprisjustert_merkostnad_siste_aar = beregn_karbonprisjustert_merkostnad(aarlig_utslippsreduksjon, 2025 + levetid, merkostnad)
     if levetid > 1:
-        karbonprisjustert_merkostnad_siste_aar = beregn_karbonprisjustert_merkostnad(aarlig_utslippsreduksjon, 2025 + levetid, merkostnad)
         st.markdown(
             f"Karbonprisjustert MK, siste år:  \n**:blue[{formater_nummer(karbonprisjustert_merkostnad_siste_aar)}]** *:gray[NOK, år {levetid}]*",
             help="""**Hva blir årlig driftskonsekvens justert for CO2-avgiftssatser i siste år av tiltakets levetid?**  
@@ -349,7 +349,15 @@ data = [
     merkostnad,
     merkostnad_kommentar,
     levetid,
-    levetid_kommentar
+    levetid_kommentar,
+    aarlig_tiltaksmengde,
+    total_tiltaksmengde,
+    aarlig_utslippsreduksjon,
+    total_utslippsreduksjon,
+    karbonprisjustert_merkostnad_foerste_aar,
+    karbonprisjustert_merkostnad_siste_aar,
+    naaverdi,
+    tiltakskostnad
 ]
 
 st.divider()
