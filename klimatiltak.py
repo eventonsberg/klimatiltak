@@ -10,7 +10,7 @@ from beregninger import (
     beregn_tiltakskostnad
 )
 from formatering import formater_nummer
-from registrer_tiltak import registrer_tiltak
+from registrer_tiltak import registrer_tiltak, hent_registrerte_tiltak
 
 st.set_page_config(
     page_title="Klimatiltak",
@@ -363,6 +363,8 @@ st.button(
     args=(data,)
 )
 
-
-
-st.caption("Alle registrerte tiltak lagres her: https://docs.google.com/spreadsheets/d/1FLDZ9ZibMww44XnBYChb-ecOTvD189TR-vZ6QpGREnM/edit?usp=sharing")
+st.divider()
+with st.expander("Oversikt over registrerte tiltak"):
+    registrerte_tiltak = hent_registrerte_tiltak()
+    st.dataframe(registrerte_tiltak)
+    st.caption("Alle registrerte tiltak lagres her: https://docs.google.com/spreadsheets/d/1FLDZ9ZibMww44XnBYChb-ecOTvD189TR-vZ6QpGREnM/edit?usp=sharing")

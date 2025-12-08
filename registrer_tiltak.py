@@ -11,3 +11,9 @@ def registrer_tiltak(data):
     sheet = client.open("Klimatiltak").sheet1
     sheet.append_row(data)
     st.session_state['tiltak_id'] = tiltak_id
+
+@st.cache_data
+def hent_registrerte_tiltak():
+    sheet = client.open("Klimatiltak").sheet1
+    records = sheet.get_all_records()
+    return records
