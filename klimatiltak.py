@@ -392,6 +392,8 @@ with st.sidebar:
     )
 
 st.divider()
+st.subheader("Støttefunksjonalitet")
+
 registrerte_tiltak = hent_registrerte_tiltak()
 sammenligning = st.multiselect(
     "Sammenlign det nye tiltaket med tidligere registrerte tiltak",
