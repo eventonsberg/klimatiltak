@@ -14,7 +14,8 @@ from registrer_tiltak import registrer_tiltak, hent_registrerte_tiltak
 from visualisering import (
     vis_sammenligning_av_unngaatte_utslipp,
     vis_sammenligning_av_naaverdi,
-    vis_sammenligning_av_tiltakskostnad
+    vis_sammenligning_av_tiltakskostnad,
+    vis_avgiftsbaner
 )
 
 st.set_page_config(
@@ -381,7 +382,6 @@ data = [
 
 with st.sidebar:
     st.header("Send inn utfylt skjema")
-
     st.button(
         "Registrer tiltaket",
         type="primary",
@@ -395,19 +395,20 @@ st.divider()
 st.subheader("Støttefunksjonalitet")
 
 registrerte_tiltak = hent_registrerte_tiltak()
-sammenligning = st.multiselect(
-    "Sammenlign det nye tiltaket med tidligere registrerte tiltak",
-    [tiltak['ID-nummer'] for tiltak in registrerte_tiltak if 'ID-nummer' in tiltak],
-    placeholder="Velg ett eller flere tiltak",
-    format_func=lambda x: f"Tiltak {x}",
-    help="Velg ett eller flere tidligere registrerte tiltak for å sammenligne med det nye tiltaket"
-)
-if sammenligning:
-    vis_sammenligning_av_unngaatte_utslipp(total_utslippsreduksjon, sammenligning, registrerte_tiltak)
-    vis_sammenligning_av_naaverdi(naaverdi, sammenligning, registrerte_tiltak)
-    vis_sammenligning_av_tiltakskostnad(tiltakskostnad, sammenligning, registrerte_tiltak)
+with st.expander("Vis sammenligning med tidligere registrerte tiltak"):
+    sammenligning = st.multiselect(
+        "Velg tiltak du ønsker å sammenligne med",
+        [tiltak['ID-nummer'] for tiltak in registrerte_tiltak if 'ID-nummer' in tiltak],
+        placeholder="Velg ett eller flere tiltak",
+        format_func=lambda x: f"Tiltak {x}",
+        help="Velg ett eller flere tidligere registrerte tiltak for å sammenligne med det nye tiltaket"
+    )
+    if sammenligning:
+        vis_sammenligning_av_unngaatte_utslipp(total_utslippsreduksjon, sammenligning, registrerte_tiltak)
+        vis_sammenligning_av_naaverdi(naaverdi, sammenligning, registrerte_tiltak)
+        vis_sammenligning_av_tiltakskostnad(tiltakskostnad, sammenligning, registrerte_tiltak)
 
-with st.expander("Oversikt over registrerte tiltak"):
+with st.expander("Vis oversikt over tidligere registrerte tiltak"):
     st.dataframe(registrerte_tiltak)
     st.button(
         "Oppdater oversikten",
@@ -415,3 +416,6 @@ with st.expander("Oversikt over registrerte tiltak"):
         icon=":material/refresh:"
     )
     st.caption("Alle registrerte tiltak lagres her: https://docs.google.com/spreadsheets/d/1FLDZ9ZibMww44XnBYChb-ecOTvD189TR-vZ6QpGREnM/edit?usp=sharing")
+
+with st.expander("Vis avgiftsbaner"):
+    vis_avgiftsbaner(aarlig_utslippsreduksjon, merkostnad)
