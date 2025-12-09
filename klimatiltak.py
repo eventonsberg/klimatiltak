@@ -262,6 +262,15 @@ levetid_kommentar = st.text_area(
     help=comment_help
 )
 
+ikke_kvantifiserte_effekter = st.text_area(
+    "Ikke-kvantifiserte effekter",
+    placeholder="Fyll inn beskrivelse av ikke-kvantifiserte effekter",
+    help="""
+        **Hvilke andre effekter er relevant å vurdere ved gjennomføring av tiltaket?**  
+        Beskriv andre effekter, f.eks. hvordan tiltaket kan påvirke beredskap og/eller operativ evne.
+    """
+)
+
 with st.sidebar:
     st.header("Beregnet tiltakseffekt")
 
@@ -354,6 +363,7 @@ data = [
     merkostnad_kommentar,
     levetid,
     levetid_kommentar,
+    ikke_kvantifiserte_effekter,
     aarlig_tiltaksmengde,
     total_tiltaksmengde,
     aarlig_utslippsreduksjon,
