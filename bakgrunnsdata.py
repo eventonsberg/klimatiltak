@@ -36,8 +36,6 @@ utslippskilder = {
     }
 }
 
-materielltyper = ("Fartøy", "Luftfartøy", "Lette kjøretøy", "Tunge kjøretøy", "Personelltransport (buss)", "Annet")
-
 CO2_avgiftsnivå = {
     2024: 1.176, # NOK per kg CO2-ekv
     2025: 1.405,

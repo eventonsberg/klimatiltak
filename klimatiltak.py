@@ -1,5 +1,5 @@
 import streamlit as st
-from bakgrunnsdata import utslippskilder, materielltyper
+from bakgrunnsdata import utslippskilder
 from beregninger import (
     beregn_aarlig_tiltaksmengde,
     beregn_total_tiltaksmengde,
@@ -88,19 +88,23 @@ utslippskilde = st.selectbox(
     """
 )
 
-materiell = st.selectbox(
-    "Materiell tilknyttet utslipp",
-    materielltyper,
-    index=None,
-    placeholder="Velg materiell",
-    help="""
-        **Hvilke type materiell omhandler tiltaket?**  
-        Velg fra rullgardinlisten.  
-        Om tiltaket målrettes ulike plattformer og/eller kjøretøy, velg en av dem (verktøyet er beregnet for å lage ett tiltak per materiell-type).  
-        Om tiltaket målrettes transportrettede aktiviteter, velg 'Personelltransport'.  
-        Om tiltaket målrettes andre utslippspunkter enn materiell, velg 'Andre' (merk: tiltakseffekter vil ikke beregnes for disse tiltakene).
-    """
-)
+materiell = None
+if (utslippskilde and
+    'Utslippsfaktor' in utslippskilder[utslippskilde] and
+    len(utslippskilder[utslippskilde]['Utslippsfaktor']) >= 1):
+    materiell = st.selectbox(
+        "Materiell tilknyttet utslipp",
+        utslippskilder[utslippskilde]['Utslippsfaktor'].keys(),
+        index=None,
+        placeholder="Velg materiell",
+        help="""
+            **Hvilke type materiell omhandler tiltaket?**  
+            Velg fra rullgardinlisten.  
+            Om tiltaket målrettes ulike plattformer og/eller kjøretøy, velg en av dem (verktøyet er beregnet for å lage ett tiltak per materiell-type).  
+            Om tiltaket målrettes transportrettede aktiviteter, velg 'Personelltransport'.  
+            Om tiltaket målrettes andre utslippspunkter enn materiell, velg 'Andre' (merk: tiltakseffekter vil ikke beregnes for disse tiltakene).
+        """
+    )
 
 st.divider()
 st.subheader("Fyll inn estimater for tiltaket")
