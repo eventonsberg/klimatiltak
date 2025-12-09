@@ -32,7 +32,7 @@ st.subheader("Fyll inn informasjon om tiltaket")
 
 dif = st.selectbox(
     "DIF",
-    ("Hæren", "Sjøforsvaret", "Luftforsvaret", "Andre"),
+    ("Hæren", "Sjøforsvaret", "Luftforsvaret", "FLO", "Andre"),
     index=None,
     placeholder="Velg DIF",
     help="""
@@ -74,7 +74,7 @@ beskrivelse = st.text_area(
 )
 
 utslippskilde = st.selectbox(
-    "Utslippskilde tiltaket målrettes",
+    "Kilde til direkte utslipp",
     list(utslippskilder.keys()),
     index=None,
     placeholder="Velg utslippskilde",
@@ -89,7 +89,7 @@ utslippskilde = st.selectbox(
 )
 
 materiell = st.selectbox(
-    "Materiell tiltaket målrettes",
+    "Materiell tilknyttet utslipp",
     materielltyper,
     index=None,
     placeholder="Velg materiell",
@@ -360,19 +360,25 @@ data = [
     tiltakskostnad
 ]
 
-st.divider()
-st.subheader("Send inn utfylt skjema")
+with st.sidebar:
+    st.header("Send inn utfylt skjema")
 
-st.button(
-    "Registrer tiltaket",
-    type="primary",
-    help="Klikk for å registrere tiltaket i databasen",
-    on_click=registrer_tiltak,
-    args=(data,)
-)
+    st.button(
+        "Registrer tiltaket",
+        type="primary",
+        help="Klikk for å registrere tiltaket i databasen",
+        on_click=registrer_tiltak,
+        args=(data,),
+        icon=":material/assignment_add:"
+    )
 
 st.divider()
 with st.expander("Oversikt over registrerte tiltak"):
     registrerte_tiltak = hent_registrerte_tiltak()
     st.dataframe(registrerte_tiltak)
+    st.button(
+        "Oppdater oversikten",
+        on_click=lambda: st.cache_data.clear(),
+        icon=":material/refresh:"
+    )
     st.caption("Alle registrerte tiltak lagres her: https://docs.google.com/spreadsheets/d/1FLDZ9ZibMww44XnBYChb-ecOTvD189TR-vZ6QpGREnM/edit?usp=sharing")
