@@ -395,6 +395,12 @@ with st.sidebar:
 st.divider()
 st.subheader("Støttefunksjonalitet")
 
+with st.expander("Vis avgiftsbaner"):
+    vis_avgiftsbaner(aarlig_utslippsreduksjon, merkostnad)
+
+with st.expander("Vis totalinvestering"):
+    vis_totalinvestering(aarlig_utslippsreduksjon, merkostnad, engangsinvestering)
+
 registrerte_tiltak = hent_registrerte_tiltak()
 with st.expander("Vis sammenligning med tidligere registrerte tiltak"):
     sammenligning = st.multiselect(
@@ -417,9 +423,3 @@ with st.expander("Vis oversikt over tidligere registrerte tiltak"):
         icon=":material/refresh:"
     )
     st.caption("Alle registrerte tiltak lagres her: https://docs.google.com/spreadsheets/d/1FLDZ9ZibMww44XnBYChb-ecOTvD189TR-vZ6QpGREnM/edit?usp=sharing")
-
-with st.expander("Vis avgiftsbaner"):
-    vis_avgiftsbaner(aarlig_utslippsreduksjon, merkostnad)
-
-with st.expander("Vis totalinvestering"):
-    vis_totalinvestering(aarlig_utslippsreduksjon, merkostnad, engangsinvestering)
