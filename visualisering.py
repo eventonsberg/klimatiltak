@@ -5,15 +5,15 @@ from formatering import formater_nummer
 from bakgrunnsdata import CO2_avgiftsnivå
 from beregninger import beregn_karbonprisjustert_merkostnad, beregn_naaverdi
 
-def vis_sammenligning_av_unngaatte_utslipp(utslippsreduksjon_nytt_tiltak, tiltak_ids_sammenligning, registrerte_tiltak):
+def vis_sammenligning_av_unngaatte_utslipp(utslippsreduksjon_nytt_tiltak, tiltaksnummer_sammenligning, registrerte_tiltak):
     utslippsreduksjon = [{
         "Tiltak": "Nytt tiltak",
         "Utslippsreduksjon": utslippsreduksjon_nytt_tiltak/1000
     }]
-    for tiltak in registrerte_tiltak:
-        if tiltak['ID-nummer'] in tiltak_ids_sammenligning:
+    for _, tiltak in registrerte_tiltak.iterrows():
+        if tiltak['Tiltaksnummer'] in tiltaksnummer_sammenligning:
             utslippsreduksjon.append({
-                "Tiltak": f"Tiltak {tiltak['ID-nummer']}",
+                "Tiltak": f"Tiltak {tiltak['Tiltaksnummer']}",
                 "Utslippsreduksjon": tiltak.get('Unngåtte utslipp, totalt [kg CO2-ekv.]', 0)/1000
             })
     df = pd.DataFrame(utslippsreduksjon)
@@ -32,15 +32,15 @@ def vis_sammenligning_av_unngaatte_utslipp(utslippsreduksjon_nytt_tiltak, tiltak
     )
     st.altair_chart(chart)
 
-def vis_sammenligning_av_naaverdi(naaverdi_nytt_tiltak, tiltak_ids_sammenligning, registrerte_tiltak):
+def vis_sammenligning_av_naaverdi(naaverdi_nytt_tiltak, tiltaksnummer_sammenligning, registrerte_tiltak):
     naaverdi = [{
         "Tiltak": "Nytt tiltak",
         "Nåverdi": naaverdi_nytt_tiltak
     }]
-    for tiltak in registrerte_tiltak:
-        if tiltak['ID-nummer'] in tiltak_ids_sammenligning:
+    for _, tiltak in registrerte_tiltak.iterrows():
+        if tiltak['Tiltaksnummer'] in tiltaksnummer_sammenligning:
             naaverdi.append({
-                "Tiltak": f"Tiltak {tiltak['ID-nummer']}",
+                "Tiltak": f"Tiltak {tiltak['Tiltaksnummer']}",
                 "Nåverdi": tiltak.get('Tiltakets nåverdi [NOK]', 0)
             })
     df = pd.DataFrame(naaverdi)
@@ -59,15 +59,15 @@ def vis_sammenligning_av_naaverdi(naaverdi_nytt_tiltak, tiltak_ids_sammenligning
     )
     st.altair_chart(chart)
 
-def vis_sammenligning_av_tiltakskostnad(tiltakskostnad_nytt_tiltak, tiltak_ids_sammenligning, registrerte_tiltak):
+def vis_sammenligning_av_tiltakskostnad(tiltakskostnad_nytt_tiltak, tiltaksnummer_sammenligning, registrerte_tiltak):
     tiltakskostnad = [{
         "Tiltak": "Nytt tiltak",
         "Tiltakskostnad": tiltakskostnad_nytt_tiltak
     }]
-    for tiltak in registrerte_tiltak:
-        if tiltak['ID-nummer'] in tiltak_ids_sammenligning:
+    for _, tiltak in registrerte_tiltak.iterrows():
+        if tiltak['Tiltaksnummer'] in tiltaksnummer_sammenligning:
             tiltakskostnad.append({
-                "Tiltak": f"Tiltak {tiltak['ID-nummer']}",
+                "Tiltak": f"Tiltak {tiltak['Tiltaksnummer']}",
                 "Tiltakskostnad": tiltak.get('Tiltakskostnad [NOK/tonn CO2-ekv.]', 0)
             })
     df = pd.DataFrame(tiltakskostnad)

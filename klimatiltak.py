@@ -26,11 +26,11 @@ st.set_page_config(
 
 st.title("Klimatiltak")
 
-if 'tiltak_id' in st.session_state:
-    st.success(f"Tiltaket er registrert! *Tiltakets ID-nummer: {st.session_state['tiltak_id']}*", icon="✅")
+if 'unik_id' in st.session_state:
+    st.success(f"Tiltaket er registrert! *Tiltakets unike ID: {st.session_state['unik_id']}*", icon="✅")
     st.button(
         "Registrer nytt tiltak",
-        on_click=lambda: st.session_state.pop('tiltak_id', None)
+        on_click=lambda: st.session_state.pop('unik_id', None)
     )
     st.stop()
 
@@ -426,7 +426,7 @@ registrerte_tiltak = hent_registrerte_tiltak()
 with st.expander("Vis sammenligning med tidligere registrerte tiltak"):
     sammenligning = st.multiselect(
         "Velg tiltak du ønsker å sammenligne med",
-        [tiltak['ID-nummer'] for tiltak in registrerte_tiltak if 'ID-nummer' in tiltak],
+        registrerte_tiltak["Tiltaksnummer"].dropna().tolist(),
         placeholder="Velg ett eller flere tiltak",
         format_func=lambda x: f"Tiltak {x}",
         help="Velg ett eller flere tidligere registrerte tiltak for å sammenligne med det nye tiltaket"
@@ -437,7 +437,7 @@ with st.expander("Vis sammenligning med tidligere registrerte tiltak"):
         vis_sammenligning_av_tiltakskostnad(tiltakskostnad, sammenligning, registrerte_tiltak)
 
 with st.expander("Vis oversikt over tidligere registrerte tiltak"):
-    st.dataframe(registrerte_tiltak)
+    st.dataframe(registrerte_tiltak, hide_index=True)
     st.button(
         "Oppdater oversikten",
         on_click=lambda: st.cache_data.clear(),
