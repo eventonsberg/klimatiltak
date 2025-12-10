@@ -34,7 +34,28 @@ if 'tiltak_id' in st.session_state:
     )
     st.stop()
 
-st.divider()
+with st.expander("Vis generell informasjon tilknyttet klimatiltaksverktøyet"):
+    st.markdown(
+        """
+        **Forutsetninger for klimabusjett og -tiltak:** 
+        * Godt dokumenterte historiske data og rapporteringsrutiner  
+        * Integrerte budsjettprosesser og rapporteringssystemer  
+        * Kontinuerlig vurdering og oppfølging av klimatiltak  
+        """)
+    st.divider()
+    st.markdown(
+        """
+        **Dette verktøyet er begrenset til:**  
+        * Forsvarets materiellbeholdning og investeringsportefølje  
+        * Klimautslippsrettede bærekraftstiltak  
+          * :gray[*For andre bærekraftstiltak og virkemidler benyttes andre verktøy og prosesser.*]  
+        * Direkte utslipp (såkalt Scope 1-utslipp)  
+          * :gray[*Scope 1-utslipp oppstår som en direkte konsekvens av virksomhetens aktiviteter, primært drivstofforbruk gjennom operativ virksomhet.
+             Scope 2- og 3-utslipp oppstår som en indirekte konsekvens av produksjon, strømforsyning og avhending av virksomhetens forbruk og aktivitet.*]
+        * Kvantifiserbare CO2-utslipp  
+          * :gray[*Kun utslipp av CO2 til luft som kan måles og knyttes til konkrete utslippskilder, som materiell, vil beregnes.*]
+        """)
+
 st.subheader("Fyll inn informasjon om tiltaket")
 
 dif = st.selectbox(
