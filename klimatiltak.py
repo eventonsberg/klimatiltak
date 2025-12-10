@@ -15,7 +15,8 @@ from visualisering import (
     vis_sammenligning_av_unngaatte_utslipp,
     vis_sammenligning_av_naaverdi,
     vis_sammenligning_av_tiltakskostnad,
-    vis_avgiftsbaner
+    vis_avgiftsbaner,
+    vis_totalinvestering
 )
 
 st.set_page_config(
@@ -419,3 +420,6 @@ with st.expander("Vis oversikt over tidligere registrerte tiltak"):
 
 with st.expander("Vis avgiftsbaner"):
     vis_avgiftsbaner(aarlig_utslippsreduksjon, merkostnad)
+
+with st.expander("Vis totalinvestering"):
+    vis_totalinvestering(aarlig_utslippsreduksjon, merkostnad, engangsinvestering)

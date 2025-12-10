@@ -3,7 +3,7 @@ import pandas as pd
 import altair as alt
 from formatering import formater_nummer
 from bakgrunnsdata import CO2_avgiftsnivå
-from beregninger import beregn_karbonprisjustert_merkostnad
+from beregninger import beregn_karbonprisjustert_merkostnad, beregn_naaverdi
 
 def vis_sammenligning_av_unngaatte_utslipp(utslippsreduksjon_nytt_tiltak, tiltak_ids_sammenligning, registrerte_tiltak):
     utslippsreduksjon = [{
@@ -100,9 +100,6 @@ def vis_avgiftsbaner(aarlig_utslippsreduksjon, merkostnad):
             "CO2-avgiftsbesparelse": CO2_avgift
         })
     df = pd.DataFrame(data)
-    #df['Karbonprisjustert merkostnad_formatert'] = df['Karbonprisjustert merkostnad'].apply(lambda x: formater_nummer(x, 0))
-    #df['Nåverdi_formatert'] = df['Nåverdi'].apply(lambda x: formater_nummer(x, 0))
-    #df['CO2-avgiftsbesparelse_formatert'] = df['CO2-avgiftsbesparelse'].apply(lambda x: formater_nummer(x, 0))
     df_melted = df.melt(id_vars=['År'], value_vars=['Karbonprisjustert merkostnad', 'Nåverdi', 'CO2-avgiftsbesparelse'],
                         var_name='Type', value_name='Verdi')
     df_melted['Verdi_formatert'] = df_melted['Verdi'].apply(lambda x: formater_nummer(x, 0))
@@ -132,6 +129,31 @@ def vis_avgiftsbaner(aarlig_utslippsreduksjon, merkostnad):
     )
     chart = (line + points).properties(
         title='Avgiftsbaner'
+    ).configure_title(
+        anchor='middle'
+    )
+    st.altair_chart(chart)
+
+def vis_totalinvestering(aarlig_utslippsreduksjon, merkostnad, engangsinvestering):
+    data = []
+    relevante_aar = [aar for aar in CO2_avgiftsnivå.keys() if aar >= 2026]
+    for aar in relevante_aar:
+        naaverdi = beregn_naaverdi(aarlig_utslippsreduksjon, merkostnad, aar - 2025, engangsinvestering)
+        data.append({
+            "År": aar,
+            "Totalinvestering": naaverdi
+        })
+    df = pd.DataFrame(data)
+    df['Totalinvestering_formatert'] = df['Totalinvestering'].apply(lambda x: formater_nummer(x, 0))
+    chart = alt.Chart(df).mark_bar().encode(
+        x=alt.X('År:O', title='År'),
+        y=alt.Y('Totalinvestering:Q', title='Totalinvestering [NOK]'),
+        tooltip=[
+            alt.Tooltip('År:O', title='År'),
+            alt.Tooltip('Totalinvestering_formatert:N', title='Totalinvestering')
+        ]
+    ).properties(
+        title='Totalinvestering (break-even)'
     ).configure_title(
         anchor='middle'
     )
