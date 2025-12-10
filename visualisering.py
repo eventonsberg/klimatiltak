@@ -103,31 +103,24 @@ def vis_avgiftsbaner(aarlig_utslippsreduksjon, merkostnad):
     df_melted = df.melt(id_vars=['År'], value_vars=['Karbonprisjustert merkostnad', 'Nåverdi', 'CO2-avgiftsbesparelse'],
                         var_name='Type', value_name='Verdi')
     df_melted['Verdi_formatert'] = df_melted['Verdi'].apply(lambda x: formater_nummer(x, 0))
-    line = alt.Chart(df_melted).mark_line(strokeWidth=3).encode(
+    chart = alt.Chart(df_melted).mark_line(strokeWidth=3).encode(
         x=alt.X('År:O', title='År', axis=alt.Axis(grid=True)),
         y=alt.Y('Verdi:Q', title='Verdi [NOK]'),
         color=alt.Color('Type:N', title='Type',
                         legend=alt.Legend(
                             orient='bottom',
                             title=None,
-                            padding=0,
                             offset=0,
-                            labelLimit=200,
-                            symbolType='stroke'
+                            padding=0,
+                            labelLimit=200
                         )
-        )
-    )
-    points = alt.Chart(df_melted).mark_point(size=200, opacity=0).encode(
-        x='År:O',
-        y='Verdi:Q',
-        color=alt.Color('Type:N', legend=None),
+        ),
         tooltip=[
             alt.Tooltip('År:O', title='År'),
             alt.Tooltip('Type:N', title='Bane'),
             alt.Tooltip('Verdi_formatert:N', title='Verdi')
         ]
-    )
-    chart = (line + points).properties(
+    ).properties(
         title='Avgiftsbaner'
     ).configure_title(
         anchor='middle'
