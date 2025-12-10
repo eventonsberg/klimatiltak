@@ -17,10 +17,14 @@ def vis_sammenligning_av_unngaatte_utslipp(utslippsreduksjon_nytt_tiltak, tiltak
                 "Utslippsreduksjon": tiltak.get('Unngåtte utslipp, totalt [kg CO2-ekv.]', 0)/1000
             })
     df = pd.DataFrame(utslippsreduksjon)
+    df['Utslippsreduksjon_formatert'] = df['Utslippsreduksjon'].apply(lambda x: formater_nummer(x, 1))
     chart = alt.Chart(df, height=alt.Step(30)).mark_bar().encode(
         y=alt.Y('Tiltak:N', title=None),
         x=alt.X('Utslippsreduksjon:Q', title='Utslippsreduksjon [tonn CO2-ekv.]'),
-        tooltip=['Tiltak', 'Utslippsreduksjon']
+        tooltip=[
+            alt.Tooltip('Tiltak:N', title='Tiltak'),
+            alt.Tooltip('Utslippsreduksjon_formatert:N', title='Utslippsreduksjon')
+        ]
     ).properties(
         title='Unngåtte utslipp, totalt'
     ).configure_title(
@@ -96,18 +100,37 @@ def vis_avgiftsbaner(aarlig_utslippsreduksjon, merkostnad):
             "CO2-avgiftsbesparelse": CO2_avgift
         })
     df = pd.DataFrame(data)
+    #df['Karbonprisjustert merkostnad_formatert'] = df['Karbonprisjustert merkostnad'].apply(lambda x: formater_nummer(x, 0))
+    #df['Nåverdi_formatert'] = df['Nåverdi'].apply(lambda x: formater_nummer(x, 0))
+    #df['CO2-avgiftsbesparelse_formatert'] = df['CO2-avgiftsbesparelse'].apply(lambda x: formater_nummer(x, 0))
     df_melted = df.melt(id_vars=['År'], value_vars=['Karbonprisjustert merkostnad', 'Nåverdi', 'CO2-avgiftsbesparelse'],
                         var_name='Type', value_name='Verdi')
-    chart = alt.Chart(df_melted).mark_line(strokeWidth=3).encode(
+    df_melted['Verdi_formatert'] = df_melted['Verdi'].apply(lambda x: formater_nummer(x, 0))
+    line = alt.Chart(df_melted).mark_line(strokeWidth=3).encode(
         x=alt.X('År:O', title='År', axis=alt.Axis(grid=True)),
         y=alt.Y('Verdi:Q', title='Verdi [NOK]'),
         color=alt.Color('Type:N', title='Type',
-                        legend=alt.Legend(orient='bottom', title=None, padding=0, offset=0, labelLimit=200)),
+                        legend=alt.Legend(
+                            orient='bottom',
+                            title=None,
+                            padding=0,
+                            offset=0,
+                            labelLimit=200,
+                            symbolType='stroke'
+                        )
+        )
+    )
+    points = alt.Chart(df_melted).mark_point(size=200, opacity=0).encode(
+        x='År:O',
+        y='Verdi:Q',
+        color=alt.Color('Type:N', legend=None),
         tooltip=[
             alt.Tooltip('År:O', title='År'),
-            alt.Tooltip('Verdi:Q', title='Verdi')
+            alt.Tooltip('Type:N', title='Bane'),
+            alt.Tooltip('Verdi_formatert:N', title='Verdi')
         ]
-    ).properties(
+    )
+    chart = (line + points).properties(
         title='Avgiftsbaner'
     ).configure_title(
         anchor='middle'
