@@ -18,6 +18,7 @@ from visualisering import (
     vis_avgiftsbaner,
     vis_totalinvestering
 )
+from kopier_tiltak import FIELD_MAP, kopier_tiltak
 
 st.set_page_config(
     page_title="Klimatiltak",
@@ -63,6 +64,7 @@ dif = st.selectbox(
     ("Hæren", "Sjøforsvaret", "Luftforsvaret", "FLO", "Andre"),
     index=None,
     placeholder="Velg DIF",
+    key=FIELD_MAP["DIF"],
     help="""
         **Hvilken driftsenhet tilhører du?**  
         Velg fra rullgardinlisten.  
@@ -73,6 +75,7 @@ dif = st.selectbox(
 avdeling = st.text_input(
     "Avdeling",
     placeholder="Fyll inn avdeling",
+    key=FIELD_MAP["Avdeling"],
     help="""
         **Hvilken avdeling i driftsenheten tilhører du?**  
         Skriv inn fullt navn på avdelingen.
@@ -82,6 +85,7 @@ avdeling = st.text_input(
 enhet = st.text_input(
     "Enhet",
     placeholder="Fyll inn enhet",
+    key=FIELD_MAP["Enhet"],
     help="""
         **Hvem har ansvaret for å følge opp tiltaket?**  
         Skriv inn fullt navn på enheten.
@@ -91,6 +95,7 @@ enhet = st.text_input(
 beskrivelse = st.text_area(
     "Tiltaksbeskrivelse",
     placeholder="Fyll inn tiltaksbeskrivelse",
+    key=FIELD_MAP["Tiltaksbeskrivelse"],
     help="""
         **Hva går tiltaket ut på?**  
         Beskriv tiltaket i en kort tekst (maks 100 ord).
@@ -106,6 +111,7 @@ utslippskilde = st.selectbox(
     list(utslippskilder.keys()),
     index=None,
     placeholder="Velg utslippskilde",
+    key=FIELD_MAP["Kilde til direkte utslipp"],
     help="""
         **Hvor oppstår CO2-utslippet?**  
         Velg fra rullgardinlisten.  
@@ -129,6 +135,7 @@ materiell = st.selectbox(
     materiell_options,
     index=None,
     placeholder="Velg materiell",
+    key=FIELD_MAP["Materiell tilknyttet utslipp"],
     disabled=materiell_disabled,
     help="""
         **Hvilke type materiell omhandler tiltaket?**  
@@ -148,6 +155,7 @@ col1, col2 = st.columns(2, vertical_alignment="bottom")
 antall_materiell = col1.number_input(
     "Antall materiell tiltaket målrettes",
     min_value=0,
+    key=FIELD_MAP["Antall materiell tiltaket målrettes"],
     help="""
         **Hvor mange enheter materiell påvirkes?**  
         Fyll inn antall materiell som vil påvirkes direkte av tiltaket.
@@ -166,6 +174,7 @@ col2.button(
 antall_materiell_kommentar = st.text_area(
     "Kommentar",
     placeholder="Fyll inn kommentar til antall materiell",
+    key=FIELD_MAP["Kommentar antall materiell"],
     help=comment_help
 )
 
@@ -173,6 +182,7 @@ col1, col2 = st.columns(2, vertical_alignment="bottom")
 forbruk = col1.number_input(
     "Materiellets nåværende forbruk",
     min_value=0,
+    key=FIELD_MAP["Materiellets nåværende forbruk"],
     help="""
         **Hva forbruker dette materiellet i dag, per år i angitt enhet?**  
         Fyll inn absolutt mengde som forbrukes av det angitte materielelt basert på egne estimater eller regnskapsført tall for 2024.
@@ -188,6 +198,7 @@ col2.button(
 forbruk_kommentar = st.text_area(
     "Kommentar",
     placeholder="Fyll inn kommentar til nåværende forbruk",
+    key=FIELD_MAP["Kommentar nåværende forbruk"],
     help=comment_help
 )
 
@@ -195,6 +206,7 @@ col1, col2 = st.columns(2, vertical_alignment="bottom")
 reduksjon_absolutt = col1.number_input(
     "Årlig reduksjon etter tiltaket (absolutt)",
     min_value=0,
+    key=FIELD_MAP["Årlig reduksjon etter tiltaket (absolutt)"],
     help="""
         **Hvor mye kan tiltaket redusere i absolutte mengde, per materiell og per år?**  
         Fyll inn absolutt mengde som endres basert på egne estimater eller regnskapsført tall for 2024.
@@ -211,6 +223,7 @@ reduksjon_prosent = col1.number_input(
     "Årlig reduksjon etter tiltaket (prosent)",
     min_value=0,
     max_value=100,
+    key=FIELD_MAP["Årlig reduksjon etter tiltaket (prosent)"],
     help="""
         **Hvor stor andel av dagens mengde kan reduseres, per materiell og per år?**  
         Fyll inn andelen av forbruket som forventes redusert ved tiltaket. Fylles bare inn dersom absolutt mengde er ukjent.
@@ -226,6 +239,7 @@ col2.button(
 reduksjon_kommentar = st.text_area(
     "Kommentar",
     placeholder="Fyll inn kommentar til årlig reduksjon",
+    key=FIELD_MAP["Kommentar årlig reduksjon"],
     help=comment_help
 )
 
@@ -233,6 +247,7 @@ col1, col2 = st.columns(2, vertical_alignment="bottom")
 engangsinvestering = col1.number_input(
     "Forventet engangsinvestering",
     min_value=0,
+    key=FIELD_MAP["Forventet engangsinvestering [NOK]"],
     help="""
         **Hva vil tiltaket kreve av nye midler over investeringsbudsjettet?**  
         Fyll inn estimat for engangsinvestering (typisk første året) basert på deres beregning eller en sammenlikning med tilsvarende investeringer
@@ -247,6 +262,7 @@ col2.button(
 engangsinvestering_kommentar = st.text_area(
     "Kommentar",
     placeholder="Fyll inn kommentar til engangsinvestering",
+    key=FIELD_MAP["Kommentar engangsinvestering"],
     help=comment_help
 )
 
@@ -254,6 +270,7 @@ col1, col2 = st.columns(2, vertical_alignment="bottom")
 merkostnad = col1.number_input(
     "Forventet merkostnad (MK)",
     step=1,
+    key=FIELD_MAP["Forventet merkostnad (MK) [NOK/år]"],
     help="""
         **Hva vil tiltaket medføre i netto driftskostnader?**  
         Fyll inn summen av forventede årlige utgifter eller besparelser i drift ved gjennomføring av tiltaket, basert på egne beregninger eller tidligere driftregnskap.
@@ -269,6 +286,7 @@ col2.button(
 merkostnad_kommentar = st.text_area(
     "Kommentar",
     placeholder="Fyll inn kommentar til merkostnad",
+    key=FIELD_MAP["Kommentar merkostnad"],
     help=comment_help
 )
 
@@ -277,6 +295,7 @@ levetid = col1.number_input(
     "Tiltakets levetid",
     min_value=1,
     max_value=12,
+    key=FIELD_MAP["Tiltakets levetid [år]"],
     help="""
         **Hvor lenge er tiltaket anslått å vare, i antall år?**  
         Fyll inn antall år mellom 1 og 12.
@@ -292,12 +311,14 @@ col2.button(
 levetid_kommentar = st.text_area(
     "Kommentar",
     placeholder="Fyll inn kommentar til levetid",
+    key=FIELD_MAP["Kommentar levetid"],
     help=comment_help
 )
 
 ikke_kvantifiserte_effekter = st.text_area(
     "Ikke-kvantifiserte effekter",
     placeholder="Fyll inn beskrivelse av ikke-kvantifiserte effekter",
+    key=FIELD_MAP["Ikke-kvantifiserte effekter"],
     help="""
         **Hvilke andre effekter er relevant å vurdere ved gjennomføring av tiltaket?**  
         Beskriv andre effekter, f.eks. hvordan tiltaket kan påvirke beredskap og/eller operativ evne.
@@ -449,6 +470,7 @@ with tab3:
         vis_sammenligning_av_tiltakskostnad(tiltakskostnad, sammenligning, registrerte_tiltak)
 
 with tab4:
+    st.markdown("**Oversikt over tidligere registrerte tiltak**")
     st.dataframe(registrerte_tiltak, hide_index=True)
     st.button(
         "Oppdater oversikten",
@@ -456,3 +478,23 @@ with tab4:
         icon=":material/refresh:"
     )
     st.caption("Alle registrerte tiltak lagres her: https://docs.google.com/spreadsheets/d/1FLDZ9ZibMww44XnBYChb-ecOTvD189TR-vZ6QpGREnM/edit?usp=sharing")
+    st.markdown("**Ønsker du å kopiere inndata fra et tidligere registrert tiltak?**")
+    tiltaksnummer_kopiering = st.selectbox(
+        "Tiltak",
+        registrerte_tiltak["Tiltaksnummer"].dropna().tolist(),
+        index=None,
+        placeholder="Velg tiltak",
+        format_func=lambda x: f"Tiltak {x}",
+        label_visibility="collapsed"
+    )
+    kopieringstiltak_valgt = False
+    if tiltaksnummer_kopiering:
+        kopieringstiltak_valgt = True
+    st.button(
+        "Kopier inndata fra valgt tiltak",
+        disabled=not kopieringstiltak_valgt,
+        icon=":material/content_copy:",
+        on_click=kopier_tiltak,
+        args=(tiltaksnummer_kopiering, registrerte_tiltak)
+    )
+    st.caption("Advarsel: Ved kopiering vil alle data du allerede har fylt inn i skjemaet over bli overskrevet.")
