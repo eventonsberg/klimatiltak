@@ -416,14 +416,21 @@ with st.sidebar:
 st.divider()
 st.subheader("Støttefunksjonalitet")
 
-with st.expander("Vis avgiftsbaner"):
+tab1, tab2, tab3, tab4 = st.tabs([
+    "Avgiftsbaner",
+    "Totalinvestering",
+    "Sammenligning av tiltak",
+    "Registrerte tiltak"
+])
+
+with tab1:
     vis_avgiftsbaner(aarlig_utslippsreduksjon, merkostnad)
 
-with st.expander("Vis totalinvestering"):
+with tab2:
     vis_totalinvestering(aarlig_utslippsreduksjon, merkostnad, engangsinvestering)
 
 registrerte_tiltak = hent_registrerte_tiltak()
-with st.expander("Vis sammenligning med tidligere registrerte tiltak"):
+with tab3:
     sammenligning = st.multiselect(
         "Velg tiltak du ønsker å sammenligne med",
         registrerte_tiltak["Tiltaksnummer"].dropna().tolist(),
@@ -436,7 +443,7 @@ with st.expander("Vis sammenligning med tidligere registrerte tiltak"):
         vis_sammenligning_av_naaverdi(naaverdi, sammenligning, registrerte_tiltak)
         vis_sammenligning_av_tiltakskostnad(tiltakskostnad, sammenligning, registrerte_tiltak)
 
-with st.expander("Vis oversikt over tidligere registrerte tiltak"):
+with tab4:
     st.dataframe(registrerte_tiltak, hide_index=True)
     st.button(
         "Oppdater oversikten",
