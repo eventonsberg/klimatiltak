@@ -116,23 +116,28 @@ utslippskilde = st.selectbox(
     """
 )
 
-materiell = None
+materiell_disabled = True
+materiell_options = []
 if (utslippskilde and
     'Utslippsfaktor' in utslippskilder[utslippskilde] and
     len(utslippskilder[utslippskilde]['Utslippsfaktor']) >= 1):
-    materiell = st.selectbox(
-        "Materiell tilknyttet utslipp",
-        utslippskilder[utslippskilde]['Utslippsfaktor'].keys(),
-        index=None,
-        placeholder="Velg materiell",
-        help="""
-            **Hvilke type materiell omhandler tiltaket?**  
-            Velg fra rullgardinlisten.  
-            Om tiltaket målrettes ulike plattformer og/eller kjøretøy, velg en av dem (verktøyet er beregnet for å lage ett tiltak per materiell-type).  
-            Om tiltaket målrettes transportrettede aktiviteter, velg 'Personelltransport'.  
-            Om tiltaket målrettes andre utslippspunkter enn materiell, velg 'Andre' (merk: tiltakseffekter vil ikke beregnes for disse tiltakene).
-        """
-    )
+    materiell_disabled = False
+    materiell_options = list(utslippskilder[utslippskilde]['Utslippsfaktor'].keys())
+
+materiell = st.selectbox(
+    "Materiell tilknyttet utslipp",
+    materiell_options,
+    index=None,
+    placeholder="Velg materiell",
+    disabled=materiell_disabled,
+    help="""
+        **Hvilke type materiell omhandler tiltaket?**  
+        Velg fra rullgardinlisten.  
+        Om tiltaket målrettes ulike plattformer og/eller kjøretøy, velg en av dem (verktøyet er beregnet for å lage ett tiltak per materiell-type).  
+        Om tiltaket målrettes transportrettede aktiviteter, velg 'Personelltransport'.  
+        Om tiltaket målrettes andre utslippspunkter enn materiell, velg 'Andre' (merk: tiltakseffekter vil ikke beregnes for disse tiltakene).
+    """
+)
 
 st.divider()
 st.subheader("Fyll inn estimater for tiltaket")
