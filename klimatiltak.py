@@ -477,7 +477,7 @@ with tab4:
         on_click=lambda: st.cache_data.clear(),
         icon=":material/refresh:"
     )
-    st.caption("Alle registrerte tiltak lagres her: https://docs.google.com/spreadsheets/d/1FLDZ9ZibMww44XnBYChb-ecOTvD189TR-vZ6QpGREnM/edit?usp=sharing")
+    #st.caption("Alle registrerte tiltak lagres her: https://docs.google.com/spreadsheets/d/1FLDZ9ZibMww44XnBYChb-ecOTvD189TR-vZ6QpGREnM/edit?usp=sharing")
     st.markdown("**Ønsker du å kopiere inndata fra et tidligere registrert tiltak?**")
     tiltaksnummer_kopiering = st.selectbox(
         "Tiltak",
